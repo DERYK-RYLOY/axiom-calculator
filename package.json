@@ -1,0 +1,42 @@
+{
+  "name": "axiom-calculator",
+  "version": "1.0.0",
+  "description": "AXIOM X1 — a realistic, voice-controlled scientific calculator with graphing, unit conversion, base conversion and 4 skins. Runs offline on any device.",
+  "keywords": [
+    "calculator", "scientific-calculator", "graphing", "voice-control",
+    "unit-converter", "pwa", "offline", "cross-platform", "skeuomorphic",
+    "android", "ios", "windows", "macos", "linux"
+  ],
+  "homepage": "https://github.com/DERYK-RYLOY/axiom-calculator#readme",
+  "bugs": "https://github.com/DERYK-RYLOY/axiom-calculator/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DERYK-RYLOY/axiom-calculator.git"
+  },
+  "license": "MIT",
+  "author": "DERYK-RYLOY",
+  "main": "app/index.html",
+  "bin": {
+    "axiom-calculator": "bin/cli.js",
+    "axiom": "bin/cli.js"
+  },
+  "files": [
+    "app/",
+    "assets/",
+    "docs/",
+    "bin/",
+    "src/",
+    "README.md",
+    "LICENSE",
+    "CHANGELOG.md",
+    "NOTICE.md"
+  ],
+  "scripts": {
+    "start": "node bin/cli.js",
+    "test": "node test/smoke.js",
+    "assets": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-assets.ps1",
+    "screenshots": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/capture-screenshots.ps1"
+  },
+  "engines": { "node": ">=18" },
+  "publishConfig": { "access": "public" }
+}

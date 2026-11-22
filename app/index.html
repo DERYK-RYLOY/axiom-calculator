@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1b1e22">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AXIOM X1">
+<meta name="description" content="AXIOM X1 — a realistic, voice-controlled scientific calculator with graphing, unit conversion and more. Works offline on any device.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="icons/icon-512.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<title>AXIOM X1 — Advanced Scientific Calculator</title>
+<style>
+/* ============================ FONTS ============================
+   ALRO is the display face shown in the reference specimen (Artyway).
+   It is commercial — drop your licensed Alro woff2 files into fonts/
+   and the app uses them automatically. Jost (SIL OFL 1.1) is bundled
+   as a pixel-perfect geometric twin so everything works offline.
+   ============================================================= */
+@font-face{font-family:'Jost';src:url('fonts/Jost-400.ttf') format('truetype');font-weight:400;font-display:swap}
+@font-face{font-family:'Jost';src:url('fonts/Jost-500.ttf') format('truetype');font-weight:500;font-display:swap}
+@font-face{font-family:'Jost';src:url('fonts/Jost-600.ttf') format('truetype');font-weight:600;font-display:swap}
+@font-face{font-family:'Jost';src:url('fonts/Jost-700.ttf') format('truetype');font-weight:700;font-display:swap}
+@font-face{font-family:'Jost';src:url('fonts/Jost-800.ttf') format('truetype');font-weight:800;font-display:swap}
+@font-face{font-family:'Alro';src:local('Alro'),local('Alro Regular'),url('fonts/Alro-Regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:'Alro';src:local('Alro Bold'),url('fonts/Alro-Bold.woff2') format('woff2');font-weight:700;font-display:swap}
+
+/* ============================ THEMES ============================ */
+:root{
+  --body1:#3a4046; --body2:#202429; --edge:#15181b;
+  --key1:#5b6169; --key2:#3b4046; --key-txt:#f4f6f8;
+  --fn1:#8a7448; --fn2:#5f4e2b; --fn-txt:#fff3d6;
+  --op1:#e2913c; --op2:#a85d10; --op-txt:#241000;
+  --lcd-bg:#c7d6b4; --lcd-txt:#1d2b1a; --lcd-dim:#5f7357;
+  --brand:#e8edf2; --accent:#ffb454;
+  --font-display:'Alro','Jost',"Segoe UI",Roboto,Arial,sans-serif;
+}
+body[data-theme="solar"]{
+  --body1:#d8cbb0; --body2:#a89a7d; --edge:#7d7159;
+  --key1:#efe7d5; --key2:#cfc3a8; --key-txt:#3a3326;
+  --fn1:#b9a982; --fn2:#8d7d57; --fn-txt:#fffbe9;
+  --op1:#c8693a; --op2:#8f3f1c; --op-txt:#fff4e6;
+  --lcd-bg:#b9c9a6; --lcd-txt:#20301c; --lcd-dim:#63765a;
+  --brand:#4a4132; --accent:#c8693a;
+}
+body[data-theme="graphite"]{
+  --body1:#2a2d33; --body2:#0d0f12; --edge:#000;
+  --key1:#333840; --key2:#1b1f25; --key-txt:#dbe6f0;
+  --fn1:#2b4d55; --fn2:#143039; --fn-txt:#bff6ff;
+  --op1:#26a69a; --op2:#0e6b63; --op-txt:#00201e;
+  --lcd-bg:#0d261f; --lcd-txt:#6dffc0; --lcd-dim:#2f7d60;
+  --brand:#c7d3dd; --accent:#26a69a;
+}
+body[data-theme="neon"]{
+  --body1:#241636; --body2:#0d0718; --edge:#000;
+  --key1:#3a2254; --key2:#1d1030; --key-txt:#f6e9ff;
+  --fn1:#6d2d8c; --fn2:#3c1552; --fn-txt:#ffd9ff;
+  --op1:#ff3d9a; --op2:#a30d5c; --op-txt:#2a0014;
+  --lcd-bg:#160a22; --lcd-txt:#ff77d4; --lcd-dim:#7a3b6b;
+  --brand:#f0d9ff; --accent:#ff3d9a;
+}
+/* ============================ BASE ============================ */
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;min-height:100%;width:100%}
+body{
+  font-family:var(--font-display);
+  background:radial-gradient(circle at 50% 0%,#3b4450,#11151a 70%);
+  display:flex;align-items:flex-start;justify-content:center;
+  padding:clamp(8px,2.5vw,26px);color:var(--brand);
+  min-height:100vh;min-height:100dvh;overflow-x:hidden;
+}
+.calc{
+  width:min(100%,430px);
+  background:linear-gradient(160deg,var(--body1),var(--body2));
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:30px;
+  padding:clamp(12px,3.2vw,20px);
+  box-shadow:0 30px 60px rgba(0,0,0,.6),0 8px 16px rgba(0,0,0,.4),
+             inset 0 2px 1px rgba(255,255,255,.22),
+             inset 0 -3px 6px rgba(0,0,0,.5);
+  position:relative;
+}
+.calc::after{
+  content:"";position:absolute;inset:6px;border-radius:25px;
+  border:1px solid rgba(255,255,255,.05);pointer-events:none;
+}
+/* top branding */
+.top{display:flex;align-items:center;gap:10px;margin:2px 4px 12px}
+.logo{font-weight:800;font-size:1.05rem;letter-spacing:.16em;color:var(--brand);
+  text-shadow:0 1px 1px rgba(0,0,0,.6)}
+.logo b{color:var(--accent)}
+.model{font-size:.56rem;letter-spacing:.14em;opacity:.65;margin-top:2px}
+.solar{
+  margin-left:auto;width:74px;height:22px;border-radius:4px;
+  background:repeating-linear-gradient(90deg,#1b2c3c 0 8px,#29455e 8px 9px);
+  border:1px solid rgba(0,0,0,.5);box-shadow:inset 0 1px 3px rgba(0,0,0,.7),0 1px 0 rgba(255,255,255,.12);
+}
+/* ============================ LCD ============================ */
+.lcd{
+  background:var(--lcd-bg);
+  border-radius:10px;padding:12px 14px 10px;
+  box-shadow:inset 0 4px 10px rgba(0,0,0,.45),inset 0 0 0 2px rgba(0,0,0,.25),
+             0 1px 0 rgba(255,255,255,.15);
+  position:relative;overflow:hidden;color:var(--lcd-txt);
+  font-family:"Courier New",Courier,monospace;
+}
+.lcd::before{
+  content:"";position:absolute;inset:0;pointer-events:none;opacity:.22;
+  background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(0,0,0,.12) 3px 4px);
+}
+.lcd-head{display:flex;justify-content:space-between;font-size:.62rem;letter-spacing:.1em;
+  opacity:.8;min-height:1em}
+.lcd-head span{white-space:nowrap}
+.expr-line{font-size:clamp(.95rem,3.6vw,1.2rem);text-align:right;margin-top:8px;
+  min-height:1.5em;word-break:break-all;opacity:.9}
+.cursor{display:inline-block;width:.55em;height:1.05em;background:var(--lcd-txt);
+  vertical-align:-.18em;animation:blink 1s steps(1) infinite;margin-left:2px}
+@keyframes blink{50%{opacity:0}}
+.result-line{font-size:clamp(2rem,9vw,2.9rem);font-weight:700;text-align:right;
+  min-height:1.25em;line-height:1.15;word-break:break-all;letter-spacing:.02em}
+.result-line.small{font-size:clamp(1rem,4vw,1.4rem)}
+.result-line.err{color:#a42020}
+body[data-theme="graphite"] .result-line.err,body[data-theme="neon"] .result-line.err{color:#ff6b6b}
+.lcd-foot{display:flex;justify-content:space-between;gap:8px;font-size:.62rem;
+  min-height:1em;margin-top:6px;opacity:.85}
+.lcd-foot span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* ============================ KEYS ============================ */
+.keypad{display:grid;grid-template-columns:repeat(5,1fr);gap:clamp(6px,1.8vw,9px);
+  margin-top:14px}
+.key{
+  position:relative;border:0;cursor:pointer;user-select:none;
+  height:clamp(46px,12.4vw,58px);border-radius:10px;
+  background:linear-gradient(180deg,var(--key1),var(--key2));
+  color:var(--key-txt);
+  box-shadow:0 4px 0 var(--edge),0 6px 8px rgba(0,0,0,.45),
+             inset 0 1px 0 rgba(255,255,255,.3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  font-size:clamp(.9rem,3.6vw,1.15rem);font-weight:600;line-height:1;
+  transition:transform .07s,box-shadow .07s,filter .1s;
+  overflow:hidden;
+}
+.key:active,.key.pressed{
+  transform:translateY(3px);
+  box-shadow:0 1px 0 var(--edge),0 2px 4px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2);
+  filter:brightness(1.12);
+}
+.key.fn{background:linear-gradient(180deg,var(--fn1),var(--fn2));color:var(--fn-txt);font-size:clamp(.72rem,2.9vw,.95rem)}
+.key.op{background:linear-gradient(180deg,var(--op1),var(--op2));color:var(--op-txt);font-size:clamp(1rem,4vw,1.3rem)}
+.key.eq{background:linear-gradient(180deg,var(--op1),var(--op2));color:var(--op-txt);font-size:clamp(1.1rem,4.4vw,1.4rem)}
+.key .sub{font-size:.58em;opacity:.55;height:.9em;line-height:.9em;font-weight:500}
+body[data-shift="1"] .key .main{opacity:.55}
+body[data-shift="1"] .key .sub{opacity:1;font-size:1em;font-weight:700;color:#fff}
+body[data-shift="1"] .key.fn .sub{color:var(--fn-txt)}
+.key.shift-on{outline:2px solid var(--accent);outline-offset:-2px}
+/* ============================ MENU / PANELS ============================ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.62);z-index:50;
+  display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(3px)}
+.overlay.open{display:flex}
+.panel{
+  width:min(100%,560px);max-height:88vh;max-height:88dvh;overflow:auto;
+  background:linear-gradient(160deg,#262b32,#14181d);
+  border:1px solid rgba(255,255,255,.14);border-bottom:0;
+  border-radius:22px 22px 0 0;padding:16px 16px calc(20px + env(safe-area-inset-bottom));
+  box-shadow:0 -12px 40px rgba(0,0,0,.6);color:#e8eef4;
+}
+@media(min-width:620px){.overlay{align-items:center}.panel{border-radius:22px;border-bottom:1px solid rgba(255,255,255,.14)}}
+.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.panel-head h2{margin:0;font-size:1rem;letter-spacing:.05em;flex:1}
+.close{border:0;background:#39414a;color:#fff;border-radius:50%;width:34px;height:34px;
+  font-size:1.1rem;cursor:pointer}
+.tabs{display:flex;gap:6px;overflow-x:auto;padding-bottom:8px;margin-bottom:10px;
+  scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:1px solid #3a444f;background:#242a31;color:#b9c4d0;border-radius:999px;
+  padding:7px 13px;font-size:.75rem;white-space:nowrap;cursor:pointer;font-weight:600}
+.tab.active{background:var(--op1);color:#211000;border-color:var(--op1)}
+.view{display:none}
+.view.active{display:block}
+.card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  border-radius:14px;padding:14px;margin-bottom:12px}
+.card h3{margin:0 0 10px;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+label{display:block;font-size:.72rem;color:#9fb0c0;margin:8px 0 4px}
+input,select,textarea{
+  width:100%;background:#11161b;color:#eaf2fa;border:1px solid #37424d;border-radius:9px;
+  padding:10px 12px;font-size:.9rem;font-family:inherit;outline:none
+}
+input:focus,select:focus{border-color:var(--accent)}
+.btn{border:0;border-radius:9px;padding:10px 14px;font-weight:700;cursor:pointer;
+  background:#39414a;color:#eef4fa;font-size:.8rem}
+.btn.primary{background:var(--op1);color:#211000}
+.btn:active{transform:translateY(1px)}
+.row{display:flex;gap:8px;align-items:end;flex-wrap:wrap}
+.row>*{flex:1;min-width:90px}
+.big-out{font-family:"Courier New",monospace;font-size:1.5rem;font-weight:700;
+  color:var(--accent);text-align:right;margin-top:10px;word-break:break-all}
+canvas{width:100%;height:240px;background:#0b1015;border:1px solid #2b3742;border-radius:10px;display:block}
+.mini-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(78px,1fr));gap:7px}
+.mini-grid button{padding:9px 4px;font-size:.75rem;border-radius:8px;border:1px solid #3a444f;
+  background:#242b33;color:#dbe7f2;cursor:pointer;font-weight:600}
+.mini-grid button:active{background:var(--op1);color:#211000}
+.hist-item{padding:9px 10px;border-bottom:1px solid rgba(255,255,255,.09);cursor:pointer;
+  font-family:"Courier New",monospace;font-size:.82rem;display:flex;justify-content:space-between;gap:10px}
+.hist-item:hover{background:rgba(255,255,255,.06)}
+.hist-item span:last-child{color:var(--accent);font-weight:700;white-space:nowrap}
+.swatches{display:flex;gap:8px;flex-wrap:wrap}
+.swatch{width:54px;height:44px;border-radius:9px;cursor:pointer;border:2px solid transparent;font-size:.6rem;
+  display:flex;align-items:flex-end;justify-content:center;padding-bottom:3px;font-weight:700}
+.swatch.sel{border-color:#fff}
+.toggle-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);font-size:.85rem}
+.tgl{width:46px;height:26px;border-radius:999px;background:#454f59;position:relative;cursor:pointer;transition:.2s}
+.tgl::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;
+  background:#fff;transition:.2s}
+.tgl.on{background:var(--op1)}
+.tgl.on::after{left:23px}
+.note{font-size:.72rem;color:#93a4b4;line-height:1.5}
+.status{font-size:.75rem;color:#9fb0c0;min-height:1.1em;margin-top:8px}
+.warn{color:#ffb4b4}
+</style>
+</head>
+<body data-theme="classic" data-shift="0">
+<div class="calc">
+  <div class="top">
+    <div><div class="logo">AXIOM <b>X1</b></div><div class="model">SCIENTIFIC · VOICE · GRAPH</div></div>
+    <div class="solar" title="Solar cell (decorative)"></div>
+  </div>
+
+  <div class="lcd" id="lcd">
+    <div class="lcd-head"><span id="modeLbl">RAD</span><span id="statLbl">READY</span></div>
+    <div class="expr-line" id="exprLine"><span class="cursor"></span></div>
+    <div class="result-line" id="resultLine">0</div>
+    <div class="lcd-foot"><span id="hintLbl">Press MENU for extra tools</span><span id="fracLbl"></span></div>
+  </div>
+
+  <div class="keypad" id="keypad"></div>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="panel-head"><h2>AXIOM X1 · TOOL MENU</h2><button class="close" id="closeBtn">×</button></div>
+    <div class="tabs" id="tabs">
+      <button class="tab active" data-view="graph">GRAPH</button>
+      <button class="tab" data-view="convert">CONVERT</button>
+      <button class="tab" data-view="base">BASE</button>
+      <button class="tab" data-view="voice">VOICE</button>
+      <button class="tab" data-view="math">ALL Fx</button>
+      <button class="tab" data-view="history">HISTORY</button>
+      <button class="tab" data-view="settings">SETTINGS</button>
+    </div>
+
+    <!-- GRAPH -->
+    <div class="view active" id="view-graph">
+      <div class="card">
+        <h3>Function plotter</h3>
+        <label>y = f(x)</label>
+        <input id="graphExpr" value="sin(x)" spellcheck="false">
+        <div class="row" style="margin-top:10px">
+          <button class="btn primary" id="plotBtn">PLOT</button>
+          <button class="btn" id="zoomIn">ZOOM +</button>
+          <button class="btn" id="zoomOut">ZOOM −</button>
+          <button class="btn" id="graphExamples">Examples</button>
+        </div>
+        <div style="height:10px"></div>
+        <canvas id="plot"></canvas>
+        <div class="status" id="graphStatus">Plots any expression using x (e.g. x^2-3*x, sin(x)/x).</div>
+      </div>
+    </div>
+
+    <!-- CONVERT -->
+    <div class="view" id="view-convert">
+      <div class="card">
+        <h3>Unit converter</h3>
+        <label>Category</label>
+        <select id="convCat"></select>
+        <div class="row" style="margin-top:8px">
+          <div><label>Value</label><input id="convVal" type="number" value="1"></div>
+          <div><label>From</label><select id="convFrom"></select></div>
+          <div><label>To</label><select id="convTo"></select></div>
+        </div>
+        <div class="big-out" id="convOut">—</div>
+        <button class="btn" id="convSwap" style="margin-top:8px">⇄ Swap units</button>
+      </div>
+    </div>
+
+    <!-- BASE -->
+    <div class="view" id="view-base">
+      <div class="card">
+        <h3>Number base converter + bitwise</h3>
+        <label>Enter a value in any base</label>
+        <input id="baseInput" value="255" spellcheck="false">
+        <div class="row" style="margin-top:8px">
+          <button class="btn" data-base="10">DEC</button>
+          <button class="btn" data-base="16">HEX</button>
+          <button class="btn" data-base="2">BIN</button>
+          <button class="btn" data-base="8">OCT</button>
+        </div>
+        <div class="big-out" id="baseOut">—</div>
+        <label style="margin-top:14px">Bitwise operation (two integers)</label>
+        <div class="row">
+          <input id="bitA" value="12" type="number"><input id="bitB" value="10" type="number">
+          <select id="bitOp">
+            <option value="&">AND</option><option value="|">OR</option>
+            <option value="^">XOR</option><option value="<<">LSHIFT</option><option value=">>">RSHIFT</option>
+          </select>
+        </div>
+        <div class="big-out" id="bitOut">—</div>
+      </div>
+    </div>
+
+    <!-- VOICE -->
+    <div class="view" id="view-voice">
+      <div class="card">
+        <h3>Voice control</h3>
+        <p class="note">Say a calculation out loud, e.g. <b>"square root of 9 plus 3 times 2"</b>.
+        Voice input works in Chrome/Edge on Android &amp; desktop. Speech output works in most browsers.</p>
+        <button class="btn primary" id="voiceBtn" style="width:100%;margin-top:10px">🎤 START LISTENING</button>
+        <div class="status" id="voiceStatus">Tap to speak a calculation.</div>
+        <div class="toggle-row"><span>Speak results aloud</span><div class="tgl" id="speakTgl"></div></div>
+      </div>
+    </div>
+
+    <!-- ALL FUNCTIONS -->
+    <div class="view" id="view-math">
+      <div class="card">
+        <h3>Every function (tap to insert)</h3>
+        <div class="mini-grid" id="allFx"></div>
+        <p class="note" style="margin-top:10px">Tip: use <b>x = 5</b> to store a variable, then <b>x^2</b>. Use <b>ans</b> for the last answer and <b>mem</b> for memory.</p>
+      </div>
+    </div>
+
+    <!-- HISTORY -->
+    <div class="view" id="view-history">
+      <div class="card">
+        <h3>Calculation history</h3>
+        <div id="histList"></div>
+        <div class="row" style="margin-top:10px">
+          <button class="btn" id="histClear">CLEAR HISTORY</button>
+          <button class="btn" id="histCopy">COPY ALL</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="view" id="view-settings">
+      <div class="card">
+        <h3>Calculator skin</h3>
+        <div class="swatches" id="themes">
+          <div class="swatch sel" data-theme="classic" style="background:#3a4046;color:#ffb454">CLASSIC</div>
+          <div class="swatch" data-theme="solar" style="background:#d8cbb0;color:#4a4132">SOLAR</div>
+          <div class="swatch" data-theme="graphite" style="background:#1b1e22;color:#6dffc0">GRAPHITE</div>
+          <div class="swatch" data-theme="neon" style="background:#241636;color:#ff77d4">NEON</div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Behaviour</h3>
+        <div class="toggle-row"><span>Key sound</span><div class="tgl on" id="soundTgl"></div></div>
+        <div class="toggle-row"><span>Haptic vibration (mobile)</span><div class="tgl on" id="hapticTgl"></div></div>
+        <div class="toggle-row"><span>Live answer preview</span><div class="tgl on" id="liveTgl"></div></div>
+        <div class="toggle-row"><span>Show fractions</span><div class="tgl on" id="fracTgl"></div></div>
+      </div>
+      <p class="note">All settings are saved on this device. The app is fully offline — no internet needed.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* =========================================================================
+   ENGINE — recursive-descent parser (same mathematics as the C++ build)
+   ========================================================================= */
+const PI=Math.PI;
+const FUNC_ARITY={
+ sin:1,cos:1,tan:1,sec:1,csc:1,cot:1,asin:1,acos:1,atan:1,
+ sinh:1,cosh:1,tanh:1,asinh:1,acosh:1,atanh:1,
+ sqrt:1,cbrt:1,abs:1,ln:1,log:1,log2:1,exp:1,
+ pow:2,root:2,logn:2,hypot:2,
+ floor:1,ceil:1,round:1,trunc:1,sign:1,deg:1,rad:1,clamp:3,lerp:3,
+ gcd:2,lcm:2,nCr:2,nPr:2,
+ sum:-1,avg:-1,mean:-1,max:-1,min:-1,random:0,randint:2
+};
+const vars={pi:PI,e:Math.E,tau:2*PI,phi:(1+Math.sqrt(5))/2,ans:0,mem:0,inf:Infinity,nan:NaN};
+let degrees=false;
+const history=[];
+
+function tokenize(input){
+  const t=[];let i=0;
+  while(i<input.length){
+    const c=input[i];
+    if(/\s/.test(c)){i++;continue;}
+    if(/[0-9]/.test(c)||(c==='.'&&/\d/.test(input[i+1]||''))){
+      const s=i;
+      while(i<input.length&&/[\d.]/.test(input[i]))i++;
+      if(input[i]==='e'||input[i]==='E'){
+        const e=i;i++;
+        if(input[i]==='+'||input[i]==='-')i++;
+        if(/\d/.test(input[i]||'')){while(i<input.length&&/\d/.test(input[i]))i++;}else i=e;
+      }
+      const text=input.slice(s,i),num=Number(text);
+      if(Number.isNaN(num))throw new Error('Invalid number: '+text);
+      t.push({type:'Number',text,num});continue;
+    }
+    if(/[A-Za-z_]/.test(c)){const s=i;while(i<input.length&&/[A-Za-z0-9_]/.test(input[i]))i++;t.push({type:'Ident',text:input.slice(s,i)});continue;}
+    if('+-*/%^!='.includes(c)){t.push({type:'Op',text:c});i++;continue;}
+    if(c==='('){t.push({type:'LParen',text:c});i++;continue;}
+    if(c===')'){t.push({type:'RParen',text:c});i++;continue;}
+    if(c===','){t.push({type:'Comma',text:c});i++;continue;}
+    throw new Error("Unexpected character: '"+c+"'");
+  }
+  return t;
+}
+function toInt(x,n){if(!Number.isFinite(x)||Math.floor(x)!==x||Math.abs(x)>9e15)throw new Error(n+' expects integers');return Math.trunc(x);}
+function factorial(x){if(x<0||Math.floor(x)!==x)throw new Error('factorial needs a non-negative integer');if(x>170)throw new Error('factorial too large');let r=1;for(let i=2;i<=x;i++)r*=i;return r;}
+function binom(n,k){let N=toInt(n,'nCr'),K=toInt(k,'nCr');if(N<0||K<0||K>N)return 0;if(K>N-K)K=N-K;let r=1;for(let i=1;i<=K;i++){r=r*(N-K+i)/i;if(!Number.isFinite(r))throw new Error('nCr too large');}return Math.round(r);}
+function perm(n,k){let N=toInt(n,'nPr'),K=toInt(k,'nPr');if(N<0||K<0||K>N)return 0;let r=1;for(let i=0;i<K;i++){r*=(N-i);if(!Number.isFinite(r))throw new Error('nPr too large');}return r;}
+function gcd2(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;}
+function lcm2(a,b){return b===0?0:Math.abs(a*b)/gcd2(a,b);}
+function callFunction(name,a){
+  const ar=FUNC_ARITY[name];
+  if(ar===undefined)throw new Error('Unknown function: '+name);
+  if(ar>=0&&a.length!==ar)throw new Error(name+'() expects '+ar+' argument(s), got '+a.length);
+  if(ar<0&&!a.length)throw new Error(name+'() needs at least one argument');
+  const d2r=PI/180,r2d=180/PI,x=a[0],ang=degrees?d2r:1;
+  if(name==='sin')return Math.sin(x*ang);
+  if(name==='cos')return Math.cos(x*ang);
+  if(name==='tan')return Math.tan(x*ang);
+  if(name==='sec')return 1/Math.cos(x*ang);
+  if(name==='csc')return 1/Math.sin(x*ang);
+  if(name==='cot')return 1/Math.tan(x*ang);
+  if(name==='asin'){const v=Math.asin(x);return degrees?v*r2d:v;}
+  if(name==='acos'){const v=Math.acos(x);return degrees?v*r2d:v;}
+  if(name==='atan'){const v=Math.atan(x);return degrees?v*r2d:v;}
+  if(name==='atan2'){const v=Math.atan2(a[0],a[1]);return degrees?v*r2d:v;}
+  if(name==='sinh')return Math.sinh(x);
+  if(name==='cosh')return Math.cosh(x);
+  if(name==='tanh')return Math.tanh(x);
+  if(name==='asinh')return Math.asinh(x);
+  if(name==='acosh')return Math.acosh(x);
+  if(name==='atanh')return Math.atanh(x);
+  if(name==='sqrt'){if(x<0)throw new Error('sqrt domain error');return Math.sqrt(x);}
+  if(name==='cbrt')return Math.cbrt(x);
+  if(name==='abs')return Math.abs(x);
+  if(name==='ln'||name==='log'||name==='log2'){
+    if(x<=0)throw new Error(name+' domain error (input > 0)');
+    return name==='ln'?Math.log(x):name==='log'?Math.log10(x):Math.log2(x);
+  }
+  if(name==='logn'){if(a[0]<=0||a[1]<=0||a[0]===1)throw new Error('logn(base,x): base>0, base!=1, x>0');return Math.log(a[1])/Math.log(a[0]);}
+  if(name==='exp')return Math.exp(x);
+  if(name==='pow')return Math.pow(a[0],a[1]);
+  if(name==='root'){const n=a[1];if(n===0)throw new Error('root degree cannot be zero');if(a[0]<0&&Number.isInteger(n)&&Math.abs(n%2)===1)return -Math.pow(-a[0],1/n);if(a[0]<0)throw new Error('root domain error');return Math.pow(a[0],1/n);}
+  if(name==='hypot')return Math.hypot(a[0],a[1]);
+  if(name==='floor')return Math.floor(x);
+  if(name==='ceil')return Math.ceil(x);
+  if(name==='round')return Math.round(x);
+  if(name==='trunc')return Math.trunc(x);
+  if(name==='sign')return Math.sign(x);
+  if(name==='deg')return x*r2d;
+  if(name==='rad')return x*d2r;
+  if(name==='clamp'){if(a[1]>a[2])throw new Error('clamp: lo must be <= hi');return Math.min(Math.max(x,a[1]),a[2]);}
+  if(name==='lerp')return a[0]+(a[1]-a[0])*a[2];
+  if(name==='gcd')return gcd2(toInt(a[0],'gcd'),toInt(a[1],'gcd'));
+  if(name==='lcm')return lcm2(toInt(a[0],'lcm'),toInt(a[1],'lcm'));
+  if(name==='nCr')return binom(a[0],a[1]);
+  if(name==='nPr')return perm(a[0],a[1]);
+  if(name==='sum'||name==='avg'||name==='mean'){const s=a.reduce((p,v)=>p+v,0);return name==='sum'?s:s/a.length;}
+  if(name==='max')return Math.max(...a);
+  if(name==='min')return Math.min(...a);
+  if(name==='random')return Math.random();
+  if(name==='randint'){let lo=toInt(a[0],'randint'),hi=toInt(a[1],'randint');if(lo>hi)[lo,hi]=[hi,lo];return lo+Math.floor(Math.random()*(hi-lo+1));}
+  throw new Error('Unimplemented function: '+name);
+}
+class Parser{
+  constructor(t){this.t=t;this.p=0;}
+  end(){return this.p>=this.t.length;}
+  matchOp(o){if(!this.end()&&this.t[this.p].type==='Op'&&this.t[this.p].text===o){this.p++;return true;}return false;}
+  matchType(k){if(!this.end()&&this.t[this.p].type===k){this.p++;return true;}return false;}
+  expect(k,w){if(!this.matchType(k))throw new Error('Expected '+w);}
+  expression(){let v=this.term();while(!this.end()&&this.t[this.p].type==='Op'){const o=this.t[this.p].text;if(o!=='+'&&o!=='-')break;this.p++;const r=this.term();v=o==='+'?v+r:v-r;}return v;}
+  term(){let v=this.unary();while(!this.end()&&this.t[this.p].type==='Op'){const o=this.t[this.p].text;if(o!=='*'&&o!=='/'&&o!=='%')break;this.p++;const r=this.unary();if(o==='*')v*=r;else if(o==='/'){if(r===0)throw new Error('Division by zero');v/=r;}else{if(r===0)throw new Error('Modulo by zero');v%=r;}}return v;}
+  unary(){if(!this.end()&&this.t[this.p].type==='Op'){if(this.matchOp('-'))return -this.unary();if(this.matchOp('+'))return this.unary();}return this.power();}
+  power(){const b=this.primary();if(this.matchOp('^'))return Math.pow(b,this.unary());return b;}
+  primary(){
+    let v;
+    if(!this.end()&&this.t[this.p].type==='Number'){v=this.t[this.p].num;this.p++;}
+    else if(!this.end()&&this.t[this.p].type==='LParen'){this.p++;v=this.expression();this.expect('RParen',"')'");}
+    else if(!this.end()&&this.t[this.p].type==='Ident'){
+      const n=this.t[this.p].text;this.p++;
+      if(!this.end()&&this.t[this.p].type==='LParen'){
+        if(!(n in FUNC_ARITY))throw new Error('Unknown function: '+n);
+        this.p++;const args=[];
+        if(!this.matchType('RParen')){do{args.push(this.expression());}while(this.matchType('Comma'));this.expect('RParen',"')' after arguments");}
+        v=callFunction(n,args);
+      }else{
+        if(!(n in vars))throw new Error('Unknown identifier: '+n);
+        v=vars[n];
+      }
+    }else{
+      if(this.end())throw new Error('Unexpected end of expression');
+      throw new Error("Unexpected token: '"+this.t[this.p].text+"'");
+    }
+    while(this.matchOp('!'))v=factorial(v);
+    return v;
+  }
+  parse(){const v=this.expression();if(this.p!==this.t.length)throw new Error("Unexpected token: '"+this.t[this.p].text+"'");return v;}
+}
+function format(v){
+  if(Number.isNaN(v))return 'nan';
+  if(!Number.isFinite(v))return v>0?'inf':'-inf';
+  return String(Number(v.toPrecision(12)));
+}
+function toFraction(x){
+  if(!Number.isFinite(x))return null;
+  const orig=x,sign=x<0?-1:1;x=Math.abs(x);
+  let h1=1,h0=0,k1=0,k0=1,b=x;
+  for(let i=0;i<14;i++){
+    const a=Math.floor(b);const h=a*h1+h0,k=a*k1+k0;
+    if(k>20000||!Number.isFinite(k))break;
+    h0=h1;h1=h;k0=k1;k1=k;
+    const f=b-a;if(f<1e-11)break;
+    b=1/f;
+  }
+  if(!k1)return null;
+  const num=sign*h1,den=k1;
+  if(Math.abs(num/den-orig)>1e-9*Math.max(1,Math.abs(orig)))return null;
+  return num+'/'+den;
+}
+/* evaluate(input, commit): commit=false is used for live preview & graphing */
+function evaluate(input,commit){
+  const t=tokenize(input);
+  if(!t.length)return null;
+  let assign=false,target;
+  if(t.length>=3&&t[0].type==='Ident'&&t[1].type==='Op'&&t[1].text==='='){
+    target=t[0].text;
+    if(target in FUNC_ARITY)throw new Error('Cannot assign to a function: '+target);
+    t.splice(0,2);assign=true;
+  }
+  const result=new Parser(t).parse();
+  if(commit&&Number.isFinite(result)){
+    vars.ans=result;
+    if(assign)vars[target]=result;
+  }
+  return {result,assign,target};
+}
+
+/* =========================================================================
+   DEVICE UI
+   ========================================================================= */
+const $=id=>document.getElementById(id);
+const exprLine=$('exprLine'),resultLine=$('resultLine'),hintLbl=$('hintLbl'),
+      fracLbl=$('fracLbl'),statLbl=$('statLbl'),modeLbl=$('modeLbl');
+let expression='',shift=false;
+const settings={sound:true,haptic:true,live:true,frac:true,speak:false};
+try{Object.assign(settings,JSON.parse(localStorage.getItem('axiom_settings')||'{}'));}catch(e){}
+let theme='classic';try{theme=localStorage.getItem('axiom_theme')||'classic';}catch(e){}
+document.body.dataset.theme=theme;
+document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('sel',s.dataset.theme===theme));
+
+/* sounds */
+let actx=null;
+function beep(type){
+  if(!settings.sound)return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    if(actx.state==='suspended')actx.resume();
+    const o=actx.createOscillator(),g=actx.createGain();
+    o.type='sine';o.frequency.value=type==='eq'?880:type==='err'?180:440;
+    g.gain.setValueAtTime(.05,actx.currentTime);
+    g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+.09);
+    o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+.1);
+  }catch(e){}
+}
+function vib(){if(settings.haptic&&navigator.vibrate)try{navigator.vibrate(10);}catch(e){}}
+
+function render(){
+  exprLine.innerHTML=expression.replace(/&/g,'&amp;').replace(/</g,'&lt;')+(expression?'<span class="cursor"></span>':'');
+  modeLbl.textContent=degrees?'DEG':'RAD';
+  if(settings.live&&expression.trim()){
+    try{
+      const r=evaluate(expression,false);
+      if(r&&Number.isFinite(r.result)){
+        resultLine.textContent='≈ '+format(r.result);
+        resultLine.className='result-line small';
+        statLbl.textContent='PREVIEW';
+        const f=settings.frac?toFraction(r.result):null;
+        fracLbl.textContent=f?'≈ '+f:'';
+        return;
+      }
+    }catch(e){}
+  }
+  fracLbl.textContent='';
+}
+function doEvaluate(){
+  if(!expression.trim())return;
+  try{
+    const out=evaluate(expression,true);
+    if(!out)return;
+    const f=format(out.result);
+    resultLine.textContent=f;
+    resultLine.className='result-line'+(Math.abs(out.result)>1e12||(out.result!==0&&Math.abs(out.result)<1e-6)?' small':'');
+    statLbl.textContent=out.assign?'STORED':'ANSWER';
+    hintLbl.textContent=out.assign?('Stored in '+out.target):'Stored in ans';
+    fracLbl.textContent=settings.frac?(toFraction(out.result)||''):'';
+    history.unshift({expr:expression,result:f,full:(out.assign?out.target+' = ':'')+expression+'  =>  '+f});
+    renderHistory();
+    expression='';
+    beep('eq');
+    render();
+    if(settings.speak&&'speechSynthesis' in window){
+      try{speechSynthesis.cancel();speechSynthesis.speak(new SpeechSynthesisUtterance('Result '+f));}catch(e){}
+    }
+  }catch(err){
+    resultLine.textContent='ERROR';resultLine.className='result-line err small';
+    statLbl.textContent='ERROR';hintLbl.textContent=err.message;fracLbl.textContent='';
+    beep('err');
+  }
+}
+function insert(s){expression+=s;render();beep();vib();}
+function del(){expression=expression.slice(0,-1);render();beep();vib();}
+function clear(){expression='';resultLine.textContent='0';resultLine.className='result-line';
+  hintLbl.textContent='Cleared';statLbl.textContent='READY';fracLbl.textContent='';beep();vib();render();}
+function setShift(v){shift=v;document.body.dataset.shift=v?'1':'0';
+  document.querySelectorAll('.key').forEach(k=>k.classList.toggle('shift-on',v&&k.dataset.canShift==='1'));
+  hintLbl.textContent=v?'SHIFT: secondary functions active':'SHIFT off';beep();}
+
+/* Key definitions: [primary label, primary insert, secondary label, secondary insert] */
+const K=[
+ ['2nd','shift','2nd','shift','shift'],
+ ['MODE','mode','THEME','theme','mode'],
+ ['DEL','del','COPY','copy','del'],
+ ['AC','ac','ALL CLR','clear','ac'],
+ ['MENU','menu','HIST','hist','menu'],
+ ['sin','sin(','asin','asin(','fn'],
+ ['cos','cos(','acos','acos(','fn'],
+ ['tan','tan(','atan','atan(','fn'],
+ ['ln','ln(','eˣ','exp(','fn'],
+ ['log','log(','10ˣ','10^(','fn'],
+ ['√','sqrt(','x²','^2','fn'],
+ ['∛','cbrt(','x³','^3','fn'],
+ ['xʸ','^','x√y','root(','fn'],
+ ['x⁻¹','1/(','abs','abs(','fn'],
+ ['%','%','rnd','random()','fn'],
+ ['(','(','Σ','sum(','fn'],
+ [')',')','avg','avg(','fn'],
+ ['nCr','nCr(','gcd','gcd(','fn'],
+ ['nPr','nPr(','lcm','lcm(','fn'],
+ ['!','!','rndi','randint(','fn'],
+ ['7','7','7','7','num'],['8','8','8','8','num'],['9','9','9','9','num'],
+ ['÷','/','÷','/','op'],['MR','mem','MS','store','mem'],
+ ['4','4','4','4','num'],['5','5','5','5','num'],['6','6','6','6','num'],
+ ['×','*','×','*','op'],['x=','x=','π','pi','var'],
+ ['1','1','1','1','num'],['2','2','2','2','num'],['3','3','3','3','num'],
+ ['−','-','−','-','op'],['Ans','ans','e','e','var'],
+ ['0','0','0','0','num'],['.','.','.','.','num'],
+ ['EXP','e','π','pi','var'],['+','+','+','+','op'],['=','eq','=','eq','eq']
+];
+function runCommand(cmd){
+  switch(cmd){
+    case 'shift':setShift(!shift);break;
+    case 'mode':case 'theme':openMenu('settings');break;
+    case 'menu':openMenu();break;
+    case 'hist':openMenu('history');break;
+    case 'del':del();break;
+    case 'ac':clear();break;
+    case 'clear':history.length=0;clear();break;
+    case 'eq':doEvaluate();break;
+    case 'copy':copyText(resultLine.textContent);break;
+    case 'mem':insert('mem');break;
+    case 'store':
+      vars.mem=Number.isFinite(vars.ans)?vars.ans:0;
+      hintLbl.textContent='mem = '+format(vars.mem);beep();break;
+  }
+}
+const keypad=$('keypad');
+K.forEach(([p,pi,s,si,type])=>{
+  const b=document.createElement('button');
+  b.className='key'+(type==='fn'?' fn':type==='op'||type==='eq'?' '+(type==='eq'?'eq':'op'):'');
+  if(p!==s)b.dataset.canShift='1';
+  b.innerHTML='<span class="sub">'+s+'</span><span class="main">'+p+'</span>';
+  b.onclick=()=>{
+    const ins=shift?si:pi;
+    if(type==='shift'||type==='mode'||type==='menu'||type==='del'||type==='ac'||type==='eq'||type==='mem')runCommand(ins||type);
+    else if(ins==='eq')doEvaluate();
+    else if(ins==='store')runCommand('store');
+    else if(ins==='copy')runCommand('copy');
+    else insert(ins);
+    if(shift)setShift(false);
+  };
+  keypad.appendChild(b);
+});
+/* physical keyboard support */
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT')return;
+  if(/^[0-9.+\-*/%^!(),=a-zA-Z_]$/.test(e.key)){
+    if(e.key==='=')doEvaluate();
+    else insert(e.key);
+    e.preventDefault();
+  }else if(e.key==='Enter'){doEvaluate();e.preventDefault();}
+  else if(e.key==='Backspace'){del();e.preventDefault();}
+  else if(e.key==='Escape'){clear();e.preventDefault();}
+  else if(e.key==='Delete'){expression='';render();e.preventDefault();}
+});
+
+/* =========================================================================
+   MENU / TOOLS
+   ========================================================================= */
+const overlay=$('overlay');
+function openMenu(view){
+  overlay.classList.add('open');
+  if(view)switchView(view);
+  if(view==='graph')setTimeout(drawGraph,60);
+  if(view==='history')renderHistory();
+}
+function closeMenu(){overlay.classList.remove('open');}
+$('closeBtn').onclick=closeMenu;
+overlay.onclick=e=>{if(e.target===overlay)closeMenu();};
+function switchView(v){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.view===v));
+  document.querySelectorAll('.view').forEach(x=>x.classList.toggle('active',x.id==='view-'+v));
+  if(v==='graph')setTimeout(drawGraph,40);
+}
+$('tabs').onclick=e=>{const t=e.target.closest('.tab');if(t)switchView(t.dataset.view);};
+function copyText(text){
+  try{
+    if(navigator.clipboard&&window.isSecureContext)navigator.clipboard.writeText(text);
+    else{const a=document.createElement('textarea');a.value=text;document.body.appendChild(a);a.select();document.execCommand('copy');a.remove();}
+    hintLbl.textContent='Copied: '+text;
+  }catch(e){hintLbl.textContent='Copy not available here';}
+}
+function renderHistory(){
+  const box=$('histList');box.innerHTML='';
+  if(!history.length){box.innerHTML='<p class="note">No calculations yet.</p>';return;}
+  history.forEach(h=>{
+    const d=document.createElement('div');d.className='hist-item';
+    d.innerHTML='<span>'+h.expr+'</span><span>'+h.result+'</span>';
+    d.title='Click to reuse';
+    d.onclick=()=>{expression=h.expr;render();closeMenu();};
+    box.appendChild(d);
+  });
+}
+$('histClear').onclick=()=>{history.length=0;renderHistory();};
+$('histCopy').onclick=()=>copyText(history.map(h=>h.full).join('\n'));
+
+/* ALL FUNCTIONS */
+$('allFx').innerHTML=Object.keys(FUNC_ARITY).map(n=>'<button data-fx="'+n+'">'+n+(FUNC_ARITY[n]<0?'(…)':FUNC_ARITY[n]===0?'()':'(')+'</button>').join('');
+$('allFx').onclick=e=>{const b=e.target.closest('[data-fx]');if(!b)return;const n=b.dataset.fx;insert(n+(FUNC_ARITY[n]===0?'()':'('));closeMenu();};
+
+/* GRAPH */
+let zoom=1;
+function drawGraph(){
+  const cv=$('plot'),ctx=cv.getContext('2d');
+  const dpr=window.devicePixelRatio||1;
+  const w=cv.clientWidth||500,h=cv.clientHeight||240;
+  cv.width=w*dpr;cv.height=h*dpr;ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.clearRect(0,0,w,h);ctx.fillStyle='#0b1015';ctx.fillRect(0,0,w,h);
+  const expr=$('graphExpr').value.trim();
+  const savedX=vars.x;
+  const pts=[];let bad=0;
+  for(let px=0;px<=w;px+=2){
+    const xv=(px-w/2)/(w/40)/zoom;
+    try{vars.x=xv;const r=evaluate(expr,false);if(r&&Number.isFinite(r.result))pts.push([px,r.result]);else bad++;}catch(e){bad++;}
+  }
+  if(pts.length<2){$('graphStatus').textContent='No plot — check the expression. Use x as the variable.';vars.x=savedX;return;}
+  let ys=pts.map(p=>p[1]).sort((a,b)=>a-b);
+  let lo=ys[Math.floor(ys.length*.03)],hi=ys[Math.floor(ys.length*.97)];
+  if(!Number.isFinite(lo)||!Number.isFinite(hi)||hi-lo<1e-9){lo-=1;hi+=1;}
+  const pad=(hi-lo)*.12;lo-=pad;hi+=pad;
+  const Y=y=>h-(y-lo)/(hi-lo)*h;
+  // grid
+  ctx.strokeStyle='rgba(255,255,255,.07)';ctx.lineWidth=1;
+  for(let i=1;i<8;i++){const y=h*i/8;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(w,y);ctx.stroke();}
+  for(let i=1;i<10;i++){const x=w*i/10;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,h);ctx.stroke();}
+  // axes
+  ctx.strokeStyle='rgba(255,255,255,.35)';ctx.beginPath();
+  const y0=Y(0);if(y0>=0&&y0<=h){ctx.moveTo(0,y0);ctx.lineTo(w,y0);}
+  ctx.moveTo(w/2,0);ctx.lineTo(w/2,h);ctx.stroke();
+  // curve (break the line on huge jumps such as asymptotes)
+  ctx.strokeStyle='#ffb454';ctx.lineWidth=2.4;ctx.beginPath();
+  let lastY=null;
+  pts.forEach(([px,y])=>{
+    const py=Y(y);
+    if(lastY===null||Math.abs(py-lastY)>h*.6)ctx.moveTo(px,py);
+    else ctx.lineTo(px,py);
+    lastY=py;
+  });
+  ctx.stroke();
+  ctx.fillStyle='rgba(255,255,255,.6)';ctx.font='11px monospace';
+  ctx.fillText('y max '+hi.toFixed(2),6,14);ctx.fillText('y min '+lo.toFixed(2),6,h-6);
+  ctx.fillText('x range ±'+(20/zoom).toFixed(1),w-96,h-6);
+  $('graphStatus').textContent='Plotted '+pts.length+' points'+(bad?' ('+bad+' undefined)':'')+'. Zoom '+zoom.toFixed(2)+'×';
+  vars.x=savedX;
+}
+$('plotBtn').onclick=drawGraph;
+$('graphExpr').addEventListener('keydown',e=>{if(e.key==='Enter')drawGraph();});
+$('zoomIn').onclick=()=>{zoom=Math.min(zoom*1.6,100);drawGraph();};
+$('zoomOut').onclick=()=>{zoom=Math.max(zoom/1.6,.05);drawGraph();};
+$('graphExamples').onclick=()=>{
+  const ex=['sin(x)','x^2-3*x','sin(x)/x','abs(x)','sqrt(x)','exp(-x*x)','x^3-2*x+1','tan(x)'];
+  $('graphExpr').value=ex[Math.floor(Math.random()*ex.length)];drawGraph();
+};
+window.addEventListener('resize',()=>{if(overlay.classList.contains('open'))drawGraph();});
+
+/* UNIT CONVERTER */
+const UNITS={
+ length:{m:1,km:1000,cm:.01,mm:.001,mi:1609.344,yd:.9144,ft:.3048,in:.0254,nmi:1852},
+ mass:{kg:1,g:.001,mg:1e-6,t:1000,lb:.45359237,oz:.028349523,st:6.35029318},
+ temperature:{C:'C',F:'F',K:'K'},
+ area:{'m²':1,'km²':1e6,'cm²':1e-4,ha:1e4,acre:4046.856,'ft²':.092903,'in²':.00064516},
+ volume:{L:1,mL:.001,'m³':1000,'ft³':28.3168,gal:3.78541,qt:.946353,pt:.473176,cup:.236588,tbsp:.0147868},
+ speed:{'m/s':1,'km/h':.277778,'mph':.44704, knots:.514444,'ft/s':.3048},
+ data:{B:1,KB:1000,MB:1e6,GB:1e9,TB:1e12,KiB:1024,MiB:1048576,GiB:1073741824},
+ time:{s:1,min:60,h:3600,d:86400,wk:604800,mo:2629746,yr:31556952},
+ energy:{J:1,kJ:1000,cal:4.184,kcal:4184,Wh:3600,kWh:3.6e6,eV:1.602176634e-19},
+ pressure:{Pa:1,kPa:1000,bar:1e5,atm:101325,mmHg:133.322,psi:6894.76}
+};
+const catSel=$('convCat');
+catSel.innerHTML=Object.keys(UNITS).map(k=>'<option>'+k+'</option>').join('');
+function fillUnits(){
+  const u=UNITS[catSel.value];
+  $('convFrom').innerHTML=Object.keys(u).map(k=>'<option>'+k+'</option>').join('');
+  $('convTo').innerHTML=Object.keys(u).map(k=>'<option>'+k+'</option>').join('');
+  if($('convFrom').options.length>1)$('convTo').selectedIndex=1;
+  doConvert();
+}
+function doConvert(){
+  const u=UNITS[catSel.value],v=parseFloat($('convVal').value);
+  if(Number.isNaN(v)){$('convOut').textContent='—';return;}
+  let out;
+  if(catSel.value==='temperature'){
+    const f=$('convFrom').value,t=$('convTo').value;
+    const c=f==='C'?v:f==='F'?(v-32)*5/9:v-273.15;
+    out=t==='C'?c:t==='F'?c*9/5+32:c+273.15;
+  }else out=v*u[$('convFrom').value]/u[$('convTo').value];
+  $('convOut').textContent=format(out)+' '+$('convTo').value;
+}
+catSel.onchange=fillUnits;
+['convVal','convFrom','convTo'].forEach(id=>$(id).addEventListener('input',doConvert));
+$('convSwap').onclick=()=>{const a=$('convFrom').value;$('convFrom').value=$('convTo').value;$('convTo').value=a;doConvert();};
+fillUnits();
+
+/* BASE CONVERTER */
+function baseConvert(){
+  const raw=$('baseInput').value.trim();
+  if(!raw){$('baseOut').textContent='—';return;}
+  const n=parseInt(raw,0);
+  if(Number.isNaN(n)){$('baseOut').textContent='Invalid';return;}
+  $('baseOut').innerHTML='DEC '+n+'<br>HEX '+n.toString(16).toUpperCase()+'<br>BIN '+n.toString(2)+'<br>OCT '+n.toString(8);
+}
+$('baseInput').addEventListener('input',baseConvert);
+document.querySelectorAll('[data-base]').forEach(b=>b.onclick=()=>{
+  const n=parseInt($('baseInput').value.trim(),0);
+  if(!Number.isNaN(n))$('baseInput').value=b.dataset.base==='16'?n.toString(16).toUpperCase():n.toString(parseInt(b.dataset.base));
+  baseConvert();
+});
+function bitCalc(){
+  const a=parseInt($('bitA').value,10)||0,b=parseInt($('bitB').value,10)||0,op=$('bitOp').value;
+  let r;try{r=op==='&'?a&b:op==='|'?a|b:op==='^'?a^b:op==='<<'?a<<b:a>>b;}catch(e){r=NaN;}
+  $('bitOut').innerHTML='DEC '+r+'<br>HEX '+(r>>>0).toString(16).toUpperCase()+'<br>BIN '+(r>>>0).toString(2);
+}
+['bitA','bitB','bitOp'].forEach(id=>$(id).addEventListener('input',bitCalc));
+baseConvert();bitCalc();
+
+/* VOICE */
+$('speakTgl').classList.toggle('on',settings.speak);
+$('speakTgl').onclick=function(){settings.speak=!settings.speak;this.classList.toggle('on',settings.speak);saveSettings();};
+let recog=null;
+function wordsToMath(s){
+  s=s.toLowerCase();
+  const words={'zero':'0','one':'1','two':'2','three':'3','four':'4','five':'5','six':'6','seven':'7','eight':'8','nine':'9',
+    'ten':'10','eleven':'11','twelve':'12','thirteen':'13','fourteen':'14','fifteen':'15','sixteen':'16','seventeen':'17','eighteen':'18','nineteen':'19',
+    'twenty':'20','thirty':'30','forty':'40','fifty':'50','sixty':'60','seventy':'70','eighty':'80','ninety':'90','hundred':'100','thousand':'1000'};
+  s=s.replace(/square root of|root of/g,'sqrt(')
+     .replace(/cube root of/g,'cbrt(')
+     .replace(/sine of|sine/g,'sin(').replace(/cosine of|cosine|cos/g,'cos(').replace(/tangent of|tangent|tan/g,'tan(')
+     .replace(/logarithm of|log of|log/g,'log(').replace(/natural log of|ln/g,'ln(')
+     .replace(/divided by|over/g,'/').replace(/times|multiplied by|multiply/g,'*')
+     .replace(/plus|add/g,'+').replace(/minus|subtract/g,'-')
+     .replace(/to the power of|power of|raised to/g,'^')
+     .replace(/open parenthesis|left parenthesis|open bracket/g,'(')
+     .replace(/close parenthesis|right parenthesis|close bracket/g,')')
+     .replace(/point|decimal/g,'.')
+     .replace(/percent/g,'%').replace(/factorial/g,'!');
+  s=s.replace(/[a-z]+/g,w=>words[w]!==undefined?words[w]:w);
+  s=s.replace(/\s+/g,'');
+  const open=(s.match(/\(/g)||[]).length,close=(s.match(/\)/g)||[]).length;
+  for(let i=close;i<open;i++)s+=')';
+  return s;
+}
+$('voiceBtn').onclick=function(){
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!SR){$('voiceStatus').innerHTML='<span class="warn">Voice input is not supported in this browser. Try Chrome or Edge.</span>';return;}
+  if(recog){try{recog.stop();}catch(e){}recog=null;this.textContent='🎤 START LISTENING';return;}
+  recog=new SR();recog.lang='en-US';recog.interimResults=false;recog.maxAlternatives=1;
+  this.textContent='⏹ STOP LISTENING';
+  $('voiceStatus').textContent='Listening…';
+  recog.onresult=e=>{
+    const heard=e.results[0][0].transcript;
+    const expr=wordsToMath(heard);
+    $('voiceStatus').textContent='Heard: "'+heard+'"  →  '+expr;
+    expression=expr;render();closeMenu();
+    setTimeout(doEvaluate,120);
+    recog=null;$('voiceBtn').textContent='🎤 START LISTENING';
+  };
+  recog.onerror=e=>{$('voiceStatus').textContent='Error: '+e.error;recog=null;$('voiceBtn').textContent='🎤 START LISTENING';};
+  recog.onend=()=>{if(recog){recog=null;$('voiceBtn').textContent='🎤 START LISTENING';}};
+  try{recog.start();}catch(e){$('voiceStatus').textContent='Could not start microphone.';}
+};
+
+/* SETTINGS */
+function saveSettings(){try{localStorage.setItem('axiom_settings',JSON.stringify(settings));}catch(e){}}
+[['soundTgl','sound'],['hapticTgl','haptic'],['liveTgl','live'],['fracTgl','frac']].forEach(([id,key])=>{
+  const el=$(id);el.classList.toggle('on',settings[key]);
+  el.onclick=()=>{settings[key]=!settings[key];el.classList.toggle('on',settings[key]);saveSettings();render();};
+});
+document.querySelectorAll('.swatch').forEach(s=>s.onclick=()=>{
+  theme=s.dataset.theme;document.body.dataset.theme=theme;
+  try{localStorage.setItem('axiom_theme',theme);}catch(e){}
+  document.querySelectorAll('.swatch').forEach(x=>x.classList.toggle('sel',x===s));
+  beep();
+});
+
+/* DEEP LINKS — used by the documentation screenshots */
+try{
+  const q=new URLSearchParams(location.search);
+  const qt=q.get('theme');
+  if(['classic','solar','graphite','neon'].includes(qt)){
+    theme=qt;document.body.dataset.theme=theme;
+    document.querySelectorAll('.swatch').forEach(s=>s.classList.toggle('sel',s.dataset.theme===theme));
+  }
+  const qe=q.get('expr');if(qe){expression=qe;render();}
+  if(q.get('shift')==='1')setShift(true);
+  if(q.get('demo')==='1'){
+    [['2+3*4','14'],['nCr(10,3)','120'],['sin(pi/2)','1'],['x=7','7']].forEach(([e,r])=>
+      history.unshift({expr:e,result:r,full:e+'  =>  '+r}));
+    renderHistory();
+  }
+  const qv=q.get('view');if(qv)openMenu(qv);
+}catch(e){}
+
+render();
+
+/* PWA service worker (browsers only allow this on http/https) */
+if('serviceWorker' in navigator && /^https?:$/.test(location.protocol)){
+  window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+}
+</script>
+</body>
+</html>

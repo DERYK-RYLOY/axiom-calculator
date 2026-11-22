@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" width="1600" height="900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#101a26"/>
+      <stop offset="0.5" stop-color="#0b1018"/>
+      <stop offset="1" stop-color="#05070b"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.78" cy="0.45" r="0.55">
+      <stop offset="0" stop-color="#ff9d3c" stop-opacity="0.28"/>
+      <stop offset="1" stop-color="#ff9d3c" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#ffd58a"/>
+      <stop offset="0.5" stop-color="#ff9d3c"/>
+      <stop offset="1" stop-color="#ffc46b"/>
+    </linearGradient>
+    <linearGradient id="body" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4a535e"/>
+      <stop offset="0.55" stop-color="#2a313a"/>
+      <stop offset="1" stop-color="#171c23"/>
+    </linearGradient>
+    <linearGradient id="lcd" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#dbe9c6"/>
+      <stop offset="1" stop-color="#a8c68e"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffc46b"/>
+      <stop offset="1" stop-color="#dd7714"/>
+    </linearGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="26"/></filter>
+    <filter id="ds" x="-30%" y="-30%" width="160%" height="180%">
+      <feDropShadow dx="0" dy="30" stdDeviation="30" flood-color="#000" flood-opacity="0.75"/>
+    </filter>
+    <style>
+      @font-face{font-family:'Jost';src:url('../app/fonts/Jost-700.ttf');font-weight:700}
+      @font-face{font-family:'Jost';src:url('../app/fonts/Jost-400.ttf');font-weight:400}
+      .display{font-family:'Jost',Arial,sans-serif;font-weight:700}
+      .small{font-family:'Jost',Arial,sans-serif;font-weight:400}
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#glow)"/>
+
+  <!-- subtle grid -->
+  <g stroke="#ffffff" stroke-opacity="0.035" stroke-width="1">
+    <path d="M0 150H1600M0 300H1600M0 450H1600M0 600H1600M0 750H1600"/>
+    <path d="M200 0V900M400 0V900M600 0V900M800 0V900M1000 0V900M1200 0V900M1400 0V900"/>
+  </g>
+  <ellipse cx="1180" cy="760" rx="330" ry="40" fill="#000" opacity="0.8" filter="url(#blur)"/>
+
+  <!-- floating calculator -->
+  <g filter="url(#ds)" transform="translate(1000 150) rotate(-8)">
+    <rect width="430" height="600" rx="52" fill="url(#body)" stroke="#ffffff" stroke-opacity="0.14" stroke-width="3"/>
+    <rect x="18" y="18" width="394" height="564" rx="40" fill="none" stroke="#fff" stroke-opacity="0.07" stroke-width="2"/>
+    <text x="48" y="72" class="small" font-size="22" fill="#d9e4ee" letter-spacing="5">AXIOM</text>
+    <text x="330" y="72" class="display" font-size="26" fill="url(#gold)">X1</text>
+    <g fill="#15293c"><rect x="316" y="48" width="70" height="18" rx="4"/></g>
+
+    <rect x="42" y="96" width="346" height="116" rx="16" fill="#08100a"/>
+    <rect x="52" y="106" width="326" height="96" rx="11" fill="url(#lcd)"/>
+    <text x="362" y="172" text-anchor="end" font-family="Consolas,monospace" font-size="54" font-weight="bold" fill="#20311c">1024</text>
+    <text x="70" y="132" font-family="Consolas,monospace" font-size="15" fill="#5c7d50">RAD  ·  PREVIEW</text>
+
+    <g fill="#5a636f">
+      <rect x="42" y="238" width="72" height="58" rx="13"/><rect x="126" y="238" width="72" height="58" rx="13"/>
+      <rect x="210" y="238" width="72" height="58" rx="13"/><rect x="294" y="238" width="72" height="58" rx="13" fill="#8a7448"/>
+      <rect x="42" y="308" width="72" height="58" rx="13"/><rect x="126" y="308" width="72" height="58" rx="13"/>
+      <rect x="210" y="308" width="72" height="58" rx="13"/><rect x="294" y="308" width="72" height="58" rx="13" fill="#8a7448"/>
+      <rect x="42" y="378" width="72" height="58" rx="13"/><rect x="126" y="378" width="72" height="58" rx="13"/>
+      <rect x="210" y="378" width="72" height="58" rx="13"/>
+      <rect x="42" y="448" width="156" height="58" rx="13"/>
+    </g>
+    <rect x="294" y="378" width="72" height="58" rx="13" fill="url(#orange)"/>
+    <rect x="210" y="448" width="156" height="58" rx="13" fill="url(#orange)"/>
+    <g font-family="Consolas,monospace" font-size="26" font-weight="bold" fill="#2a1200" text-anchor="middle">
+      <text x="330" y="416">÷</text><text x="288" y="486">=</text>
+    </g>
+  </g>
+
+  <!-- typography -->
+  <text x="96" y="250" class="display" font-size="132" fill="#f5f8fb" letter-spacing="-4">AXIOM</text>
+  <text x="102" y="360" class="display" font-size="132" fill="url(#gold)" letter-spacing="-4">X1</text>
+  <rect x="104" y="404" width="120" height="5" rx="2" fill="url(#gold)"/>
+  <text x="104" y="470" class="display" font-size="30" fill="#d3dde7" letter-spacing="3">ADVANCED SCIENTIFIC CALCULATOR</text>
+  <g class="small" font-size="23" fill="#93a6b8">
+    <text x="106" y="540">✓ Voice control</text>
+    <text x="106" y="582">✓ Graph plotter</text>
+    <text x="106" y="624">✓ 10 unit converters</text>
+    <text x="470" y="540">✓ Base + bitwise tools</text>
+    <text x="470" y="582">✓ 4 realistic skins</text>
+    <text x="470" y="624">✓ 100% offline · any device</text>
+  </g>
+  <text x="104" y="720" font-family="Consolas,monospace" font-size="20" fill="#5f7386">npm i -g axiom-calculator</text>
+  <text x="104" y="756" font-family="Consolas,monospace" font-size="18" fill="#46596b">or open calculator.html — no install needed</text>
+</svg>

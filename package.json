@@ -1,5 +1,5 @@
 {
-  "name": "axiom-calculator",
+  "name": "@deryk-ryloy/axiom-calculator",
   "version": "1.0.0",
   "description": "AXIOM X1 — a realistic, voice-controlled scientific calculator with graphing, unit conversion, base conversion and 4 skins. Runs offline on any device.",
   "keywords": [
@@ -11,7 +11,7 @@
   "bugs": "https://github.com/DERYK-RYLOY/axiom-calculator/issues",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DERYK-RYLOY/axiom-calculator.git"
+    "url": "https://github.com/DERYK-RYLOY/axiom-calculator"
   },
   "license": "MIT",
   "author": "DERYK-RYLOY",
@@ -41,5 +41,8 @@
     "screenshots": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/capture-screenshots.ps1"
   },
   "engines": { "node": ">=18" },
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com",
+    "access": "public"
+  }
 }

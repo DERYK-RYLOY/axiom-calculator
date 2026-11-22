@@ -20,13 +20,21 @@
 | Method | Command / action | Best for |
 |---|---|---|
 | **Try it instantly** | Open [`app/index.html`](app/index.html) in any browser — no install, no internet | Everyone |
-| **Install globally** | `npm i -g axiom-calculator` then run `axiom` | PC / Mac / Linux |
-| **No install** | `npx axiom-calculator` | One-off use |
+| **Install globally** | `npm i -g @deryk-ryloy/axiom-calculator --registry=https://npm.pkg.github.com` then run `axiom` | PC / Mac / Linux |
+| **No install** | `npx --registry=https://npm.pkg.github.com @deryk-ryloy/axiom-calculator` | One-off use |
 | **Install as an app** | Open the served app and choose **Install app** / **Add to Home Screen** | Android, iPhone, desktop |
 | **Build from source** | `cd src && ./build.sh` (or `build.bat` on Windows) | C++ fans |
 
+> GitHub Packages requires authentication even for public packages. Create a classic PAT with
+> the `read:packages` scope, then log in once:
+>
+> ```bash
+> npm login --scope=@deryk-ryloy --auth-type=legacy --registry=https://npm.pkg.github.com
+> # Username: your GitHub username   Password: your PAT
+> ```
+
 ```bash
-$ npm i -g axiom-calculator
+$ npm i -g @deryk-ryloy/axiom-calculator --registry=https://npm.pkg.github.com
 $ axiom
   AXIOM X1 — Advanced Scientific Calculator
   Running at: http://localhost:53921/

@@ -25,6 +25,8 @@
 | **Install as an app** | Open the served app and choose **Install app** / **Add to Home Screen** | Android, iPhone, desktop |
 | **Build from source** | `cd src && ./build.sh` (or `build.bat` on Windows) | C++ fans |
 
+📦 **Published package:** [`@deryk-ryloy/axiom-calculator@v1.0.1`](https://github.com/DERYK-RYLOY/axiom-calculator/pkgs/npm/axiom-calculator) on GitHub Packages, published automatically by `.github/workflows/publish.yml`.
+
 > GitHub Packages requires authentication even for public packages. Create a classic PAT with
 > the `read:packages` scope, then log in once:
 >

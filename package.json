@@ -26,6 +26,7 @@
     "docs/",
     "bin/",
     "src/",
+    "test/",
     "README.md",
     "LICENSE",
     "CHANGELOG.md",
@@ -33,7 +34,9 @@
   ],
   "scripts": {
     "start": "node bin/cli.js",
-    "test": "node test/smoke.js",
+    "test": "node test/smoke.js && node test/exit.js",
+    "test:smoke": "node test/smoke.js",
+    "test:exit": "node test/exit.js",
     "assets": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/build-assets.ps1",
     "screenshots": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/capture-screenshots.ps1"
   },

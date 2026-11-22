@@ -362,6 +362,8 @@ canvas{width:100%;height:240px;background:#0b1015;border:1px solid #2b3742;borde
         <div class="toggle-row"><span>Show fractions</span><div class="tgl on" id="fracTgl"></div></div>
       </div>
       <p class="note">All settings are saved on this device. The app is fully offline — no internet needed.</p>
+      <button class="btn" id="exitBtn" style="width:100%;margin-top:12px">EXIT CALCULATOR</button>
+      <p class="note" id="exitNote" style="text-align:center"></p>
     </div>
   </div>
 </div>
@@ -919,6 +921,32 @@ document.querySelectorAll('.swatch').forEach(s=>s.onclick=()=>{
   document.querySelectorAll('.swatch').forEach(x=>x.classList.toggle('sel',x===s));
   beep();
 });
+
+/* SERVER LIFECYCLE — only active when launched by the `axiom` CLI */
+function requestExit(){
+  if(!/^https?:$/.test(location.protocol))return;
+  try{
+    if(navigator.sendBeacon)navigator.sendBeacon('__axiom/exit');
+    else fetch('__axiom/exit',{keepalive:true}).catch(()=>{});
+  }catch(e){}
+}
+function closeCalculator(){
+  requestExit();
+  statLbl.textContent='BYE';
+  const dev=document.querySelector('.calc');
+  if(dev)dev.innerHTML='<div style="text-align:center;padding:70px 10px">'+
+    '<div style="font-size:2rem;font-weight:800;color:var(--accent)">AXIOM X1</div>'+
+    '<p style="color:#93a4b4">Calculator closed. You can close this tab.</p></div>';
+  setTimeout(()=>{try{window.close();}catch(e){}},400);
+}
+$('exitBtn').onclick=closeCalculator;
+if(/^https?:$/.test(location.protocol)){
+  const ping=()=>fetch('__axiom/ping',{cache:'no-store'}).catch(()=>{});
+  ping();
+  const hb=setInterval(ping,4000);
+  window.addEventListener('pagehide',()=>{clearInterval(hb);requestExit();});
+  window.addEventListener('beforeunload',()=>{clearInterval(hb);requestExit();});
+}
 
 /* DEEP LINKS — used by the documentation screenshots */
 try{

@@ -35,6 +35,11 @@ $ axiom
 The launcher is a **zero-dependency Node server** that opens the app in your default browser.
 Use `axiom --no-open` for a URL only, or `axiom --port=8080` for a fixed port.
 
+**Clean exit, every time:** choose **EXIT CALCULATOR** in the app's Settings tab, or just close the
+browser tab. The app signals the launcher, which shuts down its server and leaves **no background
+process running**. `Ctrl+C` works too. A 5-minute watchdog covers the case where the browser is
+killed outright.
+
 ---
 
 ## ✨ What makes it different

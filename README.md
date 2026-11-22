@@ -13,8 +13,6 @@
   One codebase. Any device. Zero setup.
 </p>
 
-<p align="center"><img src="assets/hero.png" alt="AXIOM X1 hero artwork" width="900"></p>
-
 ---
 
 ## ⚡ Quick start (pick one)
@@ -84,8 +82,6 @@ constants `π e τ φ`, variables (`x = 5`), `ans`, `mem`, and DEG/RAD modes.
 |---|---|
 | ![Voice](docs/screenshots/07-voice.png) | ![History](docs/screenshots/08-history.png) |
 
-<p align="center"><img src="assets/social.png" alt="Social preview" width="720"></p>
-
 ---
 
 ## 📁 Repository layout
@@ -98,9 +94,9 @@ axiom-calculator/
 │   ├── sw.js                # offline service worker
 │   ├── icons/               # app icon in every required size
 │   └── fonts/               # Jost (OFL) + optional Alro drop-in
-├── assets/                  # vector + raster marketing artwork
-│   ├── icon.svg  hero.svg  social.svg  wordmark.svg
-│   └── *.png                # rendered by scripts/build-assets.ps1
+├── assets/                  # app icon + wordmark artwork
+│   ├── icon.svg  wordmark.svg
+│   └── icon.png  wordmark.png   # rendered by scripts/build-assets.ps1
 ├── docs/screenshots/        # real product screenshots
 ├── src/                     # portable C++17 console engine
 │   ├── main.cpp  build.bat  build.sh

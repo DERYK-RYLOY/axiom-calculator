@@ -33,8 +33,6 @@ function Render-Svg([string]$svg, [string]$out, [int]$w, [int]$h) {
 
 Write-Host 'Rendering AXIOM X1 artwork...'
 Render-Svg 'assets/icon.svg'    'app/icons/icon-512.png'         512  512
-Render-Svg 'assets/hero.svg'    'assets/hero.png'               1600  900
-Render-Svg 'assets/social.svg'  'assets/social.png'             1200  630
 Render-Svg 'assets/wordmark.svg' 'assets/wordmark.png'           900  220
 
 # Derive all the icon sizes from the master with .NET

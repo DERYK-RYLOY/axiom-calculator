@@ -1,6 +1,6 @@
 {
   "name": "@deryk-ryloy/axiom-calculator",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AXIOM X1 — a realistic, voice-controlled scientific calculator with graphing, unit conversion, base conversion and 4 skins. Runs offline on any device.",
   "keywords": [
     "calculator", "scientific-calculator", "graphing", "voice-control",

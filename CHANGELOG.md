@@ -2,6 +2,15 @@
 
 All notable changes to AXIOM X1 are documented here.
 
+## [1.0.1] — 2026-11-22
+
+### Fixed
+- Launcher now exits cleanly with no background process when the calculator tab closes
+- Added an **EXIT CALCULATOR** button in the Settings tab
+- Added an automated clean-exit test
+- Package scoped for GitHub Packages (`@deryk-ryloy/axiom-calculator`)
+- Added GitHub Actions workflow to publish on version tags
+
 ## [1.0.0] — 2026-11-22
 
 ### Added
